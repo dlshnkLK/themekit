@@ -18,7 +18,7 @@ func TestUpload(t *testing.T) {
 	ctx, client, _, _, _ := createTestCtx()
 	ctx.Args = []string{"templates/layout.liquid"}
 	ctx.Flags.NoDelete = true
-	client.On("UpdateAsset", shopify.Asset{Key: "templates/layout.liquid"}).Return(nil)
+	client.On("UpdateAsset", shopify.Asset{Key: "templates/layout.liquid", Checksum: "xyz"}).Return(nil)
 	err := deploy(ctx)
 	assert.NotNil(t, err)
 
@@ -26,7 +26,7 @@ func TestUpload(t *testing.T) {
 	ctx.Args = []string{"templates/layout.liquid"}
 	ctx.Flags.NoDelete = true
 	ctx.Env.ReadOnly = true
-	client.On("UpdateAsset", shopify.Asset{Key: "templates/layout.liquid"}).Return(nil)
+	client.On("UpdateAsset", shopify.Asset{Key: "templates/layout.liquid", Checksum: "zzz"}).Return(nil)
 	err = deploy(ctx)
 	if assert.NotNil(t, err) {
 		assert.Contains(t, err.Error(), "environment is readonly")
@@ -37,7 +37,8 @@ func TestUpload(t *testing.T) {
 	ctx.Flags.NoDelete = true
 	ctx.Env.Directory = "_testdata/projectdir"
 	ctx.Flags.Verbose = true
-	client.On("UpdateAsset", shopify.Asset{Key: "assets/app.js"}).Return(nil)
+	// why does this same checksum appear elsewhere? might it indicate a missing file or blank string?
+	client.On("UpdateAsset", shopify.Asset{Key: "assets/app.js", Checksum: "d41d8cd98f00b204e9800998ecf8427e"}).Return(nil)
 	err = deploy(ctx)
 	assert.Nil(t, err)
 	assert.Contains(t, stdOut.String(), "Updated assets/app.js")
