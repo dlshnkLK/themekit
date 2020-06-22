@@ -23,9 +23,9 @@ func TestFindAssets(t *testing.T) {
 		count  int
 	}{
 		{e: goodEnv, inputs: []string{filepath.Join("assets", "application.js")}, count: 1},
-		{e: goodEnv, count: 9},
+		{e: goodEnv, count: 10},
 		{e: badEnv, count: 7, err: " "},
-		{e: goodEnv, inputs: []string{"assets", "config/settings_data.json"}, count: 5},
+		{e: goodEnv, inputs: []string{"assets", "config/settings_data.json"}, count: 6},
 		{e: goodEnv, inputs: []string{"snippets/nope.txt"}, err: "readAsset: "},
 	}
 
@@ -99,9 +99,9 @@ func TestLoadAssetsFromDirectory(t *testing.T) {
 		ignore    func(string) bool
 		count     int
 	}{
-		{path: "", ignore: ignoreNone, count: 9},
+		{path: "", ignore: ignoreNone, count: 10},
 		{path: "", ignore: selectOne, count: 1},
-		{path: "assets", ignore: ignoreNone, count: 4},
+		{path: "assets", ignore: ignoreNone, count: 5},
 		{path: "nope", ignore: ignoreNone, count: 0, err: " "},
 	}
 
@@ -140,6 +140,8 @@ func TestReadAsset(t *testing.T) {
 				Checksum: "31409bedd9f5852166c0a4a9b874f1a7"}},
 		// `app_alternate.json` has the same content but different whitespace. Since we normalise JSON before persisting, it has the same checksum.
 		{input: filepath.Join("assets", "app_alternate.json"), expected: Asset{Key: "assets/app_alternate.json", Value: "{\"testing\":\"data\"}", Checksum: "31409bedd9f5852166c0a4a9b874f1a7"}},
+		{input: filepath.Join("assets", "template.liquid"), expected: Asset{Key: "assets/template.liquid", Value: "{% comment %}\n  The contents\n{% endcomment %}\n", Checksum: "8bed50f07f1e8d52b07300e983c21a86"}},
+
 	}
 
 	for _, testcase := range testcases {
